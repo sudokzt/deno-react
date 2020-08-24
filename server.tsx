@@ -1,27 +1,69 @@
-import React from "https://dev.jspm.io/react@16.13.1";
-import ReactDOMServer from "https://dev.jspm.io/react-dom@16.13.1/server";
-import { Application } from "https://deno.land/x/oak/mod.ts";
+import {
+  Application,
+  Context,
+  React,
+  ReactDOMServer,
+  Router,
+} from "./deps.ts"; // dependencies modules
 
-function App() {
-  return (
-    <div>
-      Hello <span>World</span>
-    </div>
-  );
+import App from "./app.tsx";
+
+const PORT = 8000;
+
+const app = new Application();
+const jsBundle = "/main.js"; // after bundling ts files
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      button: any;
+      div: any;
+      span: any;
+      h1: any;
+      p: any;
+      h2: any;
+    }
+  }
 }
 
-const body = ReactDOMServer.renderToString(<App />);
-const app = new Application();
+/**
+ * 
+ */
+const js = `import React from "https://jspm.dev/react@16.13.1";
+ import ReactDOM from "https://jspm.dev/react-dom@16.13.1";
+ const App = ${App};
+ ReactDOM.hydrate(React.createElement(App), document.getElementById('app'));`;
 
-app.use((ctx) => {
-  ctx.response.body = `
-        <!DOCTYPE html>
-        <html>
-            <body>
-                <div id=root >${body}</div>
-            </body>
-        </html>
-    `;
-});
+const html = `
+<html>
+<head>
+  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css">
+  <script type="module" src="${jsBundle}"></script>
+</head>
+<body>
+  <main id="app">${ReactDOMServer.renderToString(<App />)}</main>  
+</body>
+</html>`;
 
-await app.listen({ port: 8000 });
+/**
+  * define routing
+  */
+const router = new Router(); // oak that the middleware framework for Deno's http server
+router
+  // will serve our HTML page that contains the rendered app.
+  .get("/", (context: Context) => {
+    context.response.type = "text/html";
+    context.response.body = html;
+  })
+  // will serve our application code that is needed to hydrate the client side React application.
+  .get(jsBundle, (context: Context) => {
+    context.response.type = "application/javascript";
+    context.response.body = js;
+  });
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+console.log(`Listening port: ${PORT}`);
+
+// can use top level await
+await app.listen({ port: PORT });
