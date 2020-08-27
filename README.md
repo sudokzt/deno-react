@@ -8,6 +8,8 @@ render react components with deno.
 
 - v1.0.0
 
-[reason](https://github.com/denoland/deno/issues/6755)
-if your deno's version is higher than v1.1, you run following command
+if your deno's version is higher than v1.2, you run following command
+
 `deno upgrade --version 1.0.0`
+
+[reason](https://github.com/denoland/deno/issues/6755)
