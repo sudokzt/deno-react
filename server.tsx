@@ -6,29 +6,13 @@ import {
   Router,
 } from "./deps.ts"; // dependencies modules
 
-import App from "./app.tsx";
+import App from "./App.tsx";
 
 const PORT = 8000;
 
 const app = new Application();
 const jsBundle = "/main.js"; // after bundling ts files
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      button: any;
-      div: any;
-      span: any;
-      h1: any;
-      p: any;
-      h2: any;
-    }
-  }
-}
-
-/**
- * 
- */
 const js = `import React from "https://jspm.dev/react@16.13.1";
  import ReactDOM from "https://jspm.dev/react-dom@16.13.1";
  const App = ${App};
@@ -37,11 +21,10 @@ const js = `import React from "https://jspm.dev/react@16.13.1";
 const html = `
 <html>
 <head>
-  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css">
   <script type="module" src="${jsBundle}"></script>
 </head>
 <body>
-  <main id="app">${ReactDOMServer.renderToString(<App />)}</main>  
+  <div id="app">${ReactDOMServer.renderToString(<App />)}</div>  
 </body>
 </html>`;
 
@@ -61,7 +44,7 @@ router
     context.response.body = js;
   });
 app.use(router.routes());
-app.use(router.allowedMethods());
+// app.use(router.allowedMethods());
 
 console.log(`Listening port: ${PORT}`);
 

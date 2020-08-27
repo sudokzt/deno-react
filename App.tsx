@@ -1,29 +1,38 @@
 import { React } from "./deps.ts";
 
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      div: any;
+      span: any;
+      p: any;
+      h1: any;
+      h2: any;
+      button: any;
+    }
+  }
+}
+
 const App = () => {
-  const [count, setCount] = React.useState(0);
+  const wrapper = {
+    margin: "40px 0 0 40px",
+  };
 
   const garden = {
-    backgroundColor: "#44aa44",
-    height: "auto",
+    height: "60px",
     fontSize: "30px",
     maxWidth: "400px",
     padding: "20px 5px",
     width: "100%",
   };
-
+  const [count, setCount] = React.useState(0);
   return (
-    <div className="pure-g pure-u">
-      <h2>React App</h2>
-      <button
-        className="pure-button"
-        onClick={() => setCount(count + 1)}
-      >
-        Add a 🦕 in the field
+    <div style={wrapper}>
+      <h2>🦕App</h2>
+      <button onClick={() => setCount(count + 1)}>
+        ボタンを押すと 🦕 が増えるよ!
       </button>
-      <p style={garden}>
-        {Array(count).fill(<span>🦕</span>)}
-      </p>
+      <p style={garden}>{Array(count).fill(<span>🦕</span>)}</p>
     </div>
   );
 };
